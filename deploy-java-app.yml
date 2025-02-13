@@ -1,0 +1,29 @@
+---
+    - name: Déploiement d'une application Java en local
+      hosts: localhost
+      become: yes  # Exécuter avec sudo
+    
+      tasks:
+        - name: Installer Java et Maven
+          apt:
+            name: "{{ item }}"
+            state: present
+          loop:
+            - openjdk-11-jdk
+            - maven
+    
+        - name: Créer un dossier pour l'application
+          file:
+            path: /opt/java_app
+            state: directory
+            mode: '0755'
+    
+        - name: Copier l’application JAR dans /opt/java_app
+          copy:
+            src: roles/java_app_deploy/files/app.jar  # Met le bon chemin ici
+            dest: /opt/java_app/app.jar
+            mode: '0755'
+    
+        - name: Lancer l’application
+          command: java -jar /opt/java_app/app.jar
+    
